@@ -265,7 +265,7 @@ class MiniVCModel {
 	/** Save data */
 	public function insert($data) {
 		
-		$query = "insert into `äs` (%s) values (%s)";
+		$query = "insert into `%s` (%s) values (%s)";
 		
 		$keys = array();
 		$values = array();
