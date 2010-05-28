@@ -1,0 +1,243 @@
+<html>
+ <head>
+  <title>MiniVC - Documentation</title>
+  <meta http-equiv="Content-Type" value="text/html; charset=UTF-8"/>
+  <link rel="stylesheet" href="css/style.css" type="text/css"/>
+ </head>
+ <body>
+  <h1>MiniVC Documentation</h1>
+  
+  <h2>What is MiniVC?</h2>
+  <p>MiniVC is a very very very minimal "MVC" framework. The reason that MVC is in quotation marks in that sentence is 
+  that MiniVC is not really an MVC framework, but rather an utility for making small (very small, like the types you
+  make for you cousin's CounterStrike clan at 2AM on a Tuesday) webapps. It doesn't aim to be a real framework, but
+  rather help users in creating some structure in cases where otherwise your disk might be cluttered with small PHP
+  files each doing a small part of a bigger task. We all hate that, right?</p>
+  <p>So this is where MiniVC comes in. It's a single file you just include in the beginning of your PHP files and
+  voilá! There's no need for mod_rewrite or anything fancy-pants like that. Just plain and simple. Kind of like Britney Spears' music:
+  it's simple, nobody put any real any effort into it, but in some cases it works, and you'd be embarassed to 
+  tell anyone you're listening to it.</p>
+  
+  <h2>Installing MiniVC</h2>
+  <ol>
+   <li>Drop minivc.php somewhere in your filesystem. Preferrably in a folder where you'll be putting PHP files to.</li>
+  </ol>
+  
+  <p>That's it.</p>
+  
+  <h2>Configuring MiniVC</h2>
+  
+  <p>The beginning of the MiniVC.php file contains the configuration options in an associative array named <code>$CONF</code>.</p>
+  
+  <p>To configure MiniVC, edit this variable.</p>
+  
+  <h2>Using MiniVC</h2>
+  <p>In a normal case, the MiniVC uses the following concepts: <i>controllers</i>, <i>views</i> and <i>templates</i>. And
+  if you want to get all high and mighty, it might provide some support for <i>models</i> as well.</p>
+  <p>If these leave you baffled and you haven't heard the concept <i>controller</i> before in this context: go away, now. 
+  Seriously, don't touch this thing and go read some CakePHP documentation. I'm not kidding, here be dragons!</p>
+  
+  <h3>Defining controllers</h3>
+  
+  <p>To define a controller, create a new PHP file with the name of <i>controllername</i>.php where <i>controllername</i>
+  is the <b>lowercased</b> name for the controller. In the newly created file, you need to include <code>minivc.php</code>
+  and define a controller class, by extending the class (surprise, surprise) <code>Controller</code>.</p>
+  
+  <p>Example for creating a controller <i>users</i>.</p>
+  
+  <div class="codeexample">
+  /* File: users.php */
+  /* Require the minivc.php file. You MUST always use require_<b>once</b>() */
+  require_once('minivc.php');
+
+  class UsersController extends Controller {
+  
+  }
+  </div>
+  
+  <div class="warning">
+   If you include any other PHP files from your controller, you <b>must</b> use require_once() or include_once() instead
+   of require() or include(), otherwise your code <b>will</b> break. This is due to how MiniVC processes the files.
+  </div>
+  
+  <p>Now at this point your controller will still do nothing. Before it can do something, it needs some actions.
+  Actions are defined as functions in the controller:</p>
+  
+  <div class="codeexample">
+  /* File: users.php */
+  /* Require the minivc.php file. You MUST always use require_<b>once</b>() */
+  require_once('minivc.php');
+
+  class UsersController extends Controller {
+  
+     &nbsp;&nbsp;&nbsp;public function create() {
+     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* This function does some cool stuff! */
+     &nbsp;&nbsp;&nbsp;}
+      
+  }
+  </div>
+  
+  <p>Now to access this function, point your browser to <code>users.php?mvcmethod=create</code>. You'll get an error about a missing view,
+  but that's expected at this point.</p>
+  
+  <div class="note">
+   You can change the name of the action parameter, it does not have to be <code>mvcmethod</code>. Read more in 
+   <a href="#configuring">Configuring MiniVC</a>.
+  </div>
+  
+  <h2>Views and templates</h2>
+  
+  <p>Where <i>Controllers</i> are the logic of the application, <i>views</i> and <i>templates</i> are the presentation. Each action
+  needs to have it's own view, and by default MiniVC tries to find the view in PWD/views/<i>controllername</i>/<i>action</i>.php. So
+  for example in the UsersController example above, the view file would be <code>./views/users/create.php</code>.</p>
+  
+  <p>The views get all the variables that have been set by the <code>$this->set($name, $value)</code> -method in the controller. Example:</p>
+  
+  <div class="codeexample">
+  /* Controller code */
+  $this->set("name", "Tuomas");
+  
+  /* View code */
+  &lt;p&gt;Hello &lt;?=$name?&gt;&lt;/p&gt;
+  
+  /* Would output &lt;p&gt;Hello Tuomas&lt;/p&gt; */
+  </div>
+  
+  <p>The output of the view is then enclosed in a <i>template</i>. Templates are by default searched for in the path PWD/templates/<i>controllername</i>.phtml.</p>
+  <div class="note">
+  <div>You can edit the template name by defining a different template in the controller, by defining a variable <code>$template</code> in the class scope that defines
+  the template name (without the extension).</div><div class="codeexample" style="background-color: inherit">class UsersController extends Controller {
+  
+  &nbsp;&nbsp;var $template = "my_template";
+  
+  &nbsp;&nbsp;...
+  
+  </div></div>
+  
+  <p>The template should contain at least the variable <code>$content_for_template</code> which is the content produced by the view and the controller. Optionally
+  controllers may set the variable <code>$title_for_page</code> which will be available in the template, and should generally be used as the page &lt;title&gt;.</p>
+  
+  <h2>Models</h2>
+  
+  <p>MiniVC provides some rudimentary support for models. You do not need to define model-classes for your database objects, by you can do so by creating
+  a class that extends <code>MiniVCModel</code> and storing it in PWD/models/<i>tablename</i>_model.php where tablename is the database table name this
+  model refers to.</p> 
+  
+  <div class="warning">If you do not define models for you database tables, you will not be able to use the <code>update()</code> or <code>delete()</code> methods of the model.</div>
+  
+  <p>To define a model, create a file as described above and in it create a class that extends <code>MiniVCModel</code>.</p>
+  
+  <div class="codeexample">
+  class UsersModel extends MiniVCModel {
+  
+  &nbsp;&nbsp;/* The $primary_key variable is the most important one */
+  &nbsp;&nbsp;var $primary_key = "user_id";
+  
+  }  
+  </div>
+  
+  <p>By defining a <code>$primary_key</code> -variable in the model, the MiniVCModel will now be able to delete and update data easily. MiniVC does not support models
+  without primary keys defined.</p>
+  
+  <p>When the model is defined, you can use it in the controller:</p>
+  
+  <div class="codeexample">
+  /* Load an user with user_id of 123 */
+  $object = $this->getModel("users")->load(array("user_id" => 123));
+  /* Update the email */
+  $object->email = "john.q.doe@example.com";
+  /* Save */
+  $object->update();
+  </div>
+  
+  <p>The models always load the data so that the loaded data is set as the class members (accessing via <code>$object->{field_name}</code>).</p>
+  
+  <h2>Class Reference</h2>
+  
+  <h3>Class <code>Controller</code></h3>
+  
+  <h4>Class properties</h4>
+  
+  <p><b><code>$template</code> (string)</b></p>
+  
+  <p>Defines the template name to use when rendering this controller and it's view. Default: controller name</p>
+  
+  <p><b><code>$render_view</code> (boolean)</b></p>
+  
+  <p>A flag to indicate if the execution of this controller should render it's view. Default: true</p>
+  
+  <h4>Class methods</h4>
+  
+  <p><b><code>set($key, $value)</code></b></p>
+  <p>Sets a variable that will be usable in the view. The $key defines the variable name in the view.</p>
+  
+  <p><b><code>redirect($target_url)</code></b></p>
+  <p>Sends a HTTP redirect to the browser. This will automatically set <code>$render_view</code> to <code>false</code>.</p>
+  
+  <p><b><code>getModel($name)</code></b></p>
+  <p>Returns an (empty) instance of a model with the name <code>$name</code>. If no custom model is found, returns an
+  instance of MiniVCModel.</p>
+  
+  <p><b><code>executeSQL($sql)</code></b></p>
+  
+  <p>Executes an SQL-statement. If the query is a SQL <code>select</code> query, the results are returned in an array.</p>
+  
+  <h3>Class <code>MiniVCModel</code></h3>
+  
+  <h4>Class methods</h4>
+  
+  <p><b><code>load($conditions = array())</code></b></p>
+  
+  <p>Loads an item from this model that matches the given conditions.</p>
+  <p>The <code>$conditions</code> should be an associative array that contains the query conditions. If you need no ordering or limiting of
+  the query, then the array can contain just the conditions, as key-value -pairs with the key being mapped to the database table field name. For example:</p>
+  
+  <div class="codeexample">
+  /* Load the user with user_id=123 */
+  $user = $this->getModel("users")->load(array("user_id" => 123));
+  </div>
+  
+  <p>If you need ordering, limiting, etc, you need can provide values for the following array keys:</p>
+  <ul>
+   <li><b>conditions</b> - As displayed above, a set of key-value -pairs to define the SQL where statement</li>
+   <li><b>order</b> - An array to define the sorting of the results. Should be an associative array with they keys
+   <b>field</b> and <b>direction</b>. The field should designate which field to order by, and direction defines which
+   way to sort (asc or desc).</li>
+   <li><b>limit</b> - To return only a set of items, use <i>limit</i>. For MiniVCModel->load() this is always 1. For loadAll() you can define this.</li>  
+  </ul>
+  
+  <p style="color: red">XXX! TODO! There's no offset option</p>
+  
+  <p><b><code>loadAll($conditions = array())</code></b></p>
+  
+  <p>Loads all matching items from the model.</p>
+  <p>The <code>$conditions</code> define the query conditions, see above for description.</p>
+  <p>Returns an array containing the items, or an empty array if no items match the conditions.</p> 
+  
+  <p><b><code>insert($data)</code></b></p>
+  <p>Insert data into the database defined by this model. The array should be an associative array defining the field names
+   as keys of the array and values as the array values.</p>
+  <div class="codeexample">
+   /* Save data */
+   $this->getModel("users")->insert(array("user_id" => 123, "name" => "John Q. Doe", "email" => "john.q.doe@example.com");
+  </div>
+  
+  <p><b><code>update()</code></b></p>
+  <p>Updates the current object's data to the database.</p>
+  <div class="codeexample">
+/* Load an user with user_id of 123 */
+  $object = $this->getModel("users")->load(array("user_id" => 123));
+  /* Update the email */
+  $object->email = "john.q.doe@example.com";
+  /* Save */
+  $object->update();
+    </div>
+    <p><b><code>delete()</code></b></p>
+    <p>Deletes this item from the database.</p>
+    <div class="codeexample">
+    $user_to_delete = $this->getModel("users")->load(array("id" => 123));
+    $user_to_delete->delete();
+    </div>
+  <h2></h2>
+ </body>
+</html>

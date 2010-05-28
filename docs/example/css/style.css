@@ -1,0 +1,48 @@
+body {
+    background-color: #EEEEEE;
+    font-family: Arial, Helvetica, sans-serif;
+}
+#wrapper {
+    width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+}
+h1 {
+    font-size: 12pt;
+    font-weight: normal;
+    font-family: Georgia, Helvetica, Arial, sans-serif;
+}
+#postform {
+    border: 1px solid #CCCCCC;
+    padding: 10px;
+}
+input[type="submit"] {
+    width: 120px;
+    background-color: #CDEB8B;
+    border: 1px solid #006e2e;
+    text-align: center;
+    font-size: 13pt;
+}
+textarea {
+    font-size: 13pt;
+}
+.post {
+    border: 1px solid #CCCCCC;
+    padding: 10px;
+}
+.post .actions {
+    float: right;
+    font-size: 9pt;
+}
+a {
+    color: #990000;
+}
+.post .message {
+    color: #777777;
+    font-size: 13pt;
+    font-family: Georgia, Helvetica, Arial, sans-serif;    
+}
+.post .time {
+    font-size: 8pt;
+    color: #999999;
+}
