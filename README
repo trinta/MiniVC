@@ -1,0 +1,7 @@
+MiniVC - a minimal "MVC framework"
+
+Contents of the package:
+README - This file
+LICENSE - The license
+docs/ - Documentation and examples
+minivc.php - The Source(tm)
