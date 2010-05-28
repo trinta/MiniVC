@@ -112,6 +112,22 @@ class Controller {
 
 		return $data[0];
 	}
+	
+	public function getModel($table) {
+		/* See if we have a model class */
+		$model = "MiniVCModel";
+		if(!class_exists(ucfirst($table) . "Model")) {
+			// See if we have a class
+			if(file_exists(MiniVC::$CONF["MODEL_PATH"] . strtolower($table) . "_model.php")) {
+				require_once(MiniVC::$CONF["MODEL_PATH"] . strtolower($table) . "_model.php");
+				$model = ucfirst($table) . "Model";
+			}
+		} 
+		$modelImpl = new $model();
+		$modelImpl->model_name = strtolower($table);
+		$modelImpl->setController($this);
+		return $modelImpl;
+	}
 
 	public function loadAll($table, $conditions = array()) {
 
@@ -250,7 +266,7 @@ class MiniVCModel {
 		if(empty($this->primary_key)) {
 			trigger_error("Cannot delete an item of model " . $this->model_name . " as no primarey key defined", E_ERROR);
 		}
-		$query = "delete from `%s` where `%s`=`%s`";
+		$query = "delete from `%s` where `%s`='%s'";
 		/* Execute the query */
 		$this->controller->executeSQL(
 			sprintf(
@@ -271,7 +287,7 @@ class MiniVCModel {
 		$values = array();
 		foreach($data as $key => $value) {
 			$keys[] = mysql_escape_string($key);
-			$values[] = "`" . mysql_escape_string($value) . "`";
+			$values[] = "'" . mysql_escape_string($value) . "'";
 		}
 		
 		return $this->controller->executeSQL(
@@ -290,7 +306,7 @@ class MiniVCModel {
 		if(empty($this->primary_key)) {
 			trigger_error("Cannot update an item of model " . $this->model_name . " as no primarey key defined", E_ERROR);
 		}
-		$query = "update `%s` set `%s` where `%s`=`%s`";
+		$query = "update `%s` set `%s` where `%s`='%s'";
 		$updates = array();
 		foreach($this->field_names as $fld) {
 			$updates[] = "`$fld`=`" . myqsl_escape_string($this->$fld) . "`";
@@ -331,6 +347,12 @@ function __mvc() {
 	 */
 	$classname = (ucfirst(basename($_SERVER['PHP_SELF'], '.php')) . "Controller");
 	$controller = new $classname();
+	
+	if($_SERVER['REQUEST_METHOD'] == 'POST') {
+		$controller->input = $_POST;
+	} else {
+		$controller->input = $_GET;
+	}
 
 	/*
 	 * See if we have a condition to invoke the controller
@@ -348,8 +370,8 @@ function __mvc() {
 	$controller->
 		{
 			(
-				empty($_REQUEST[MiniVC::$CONF["PARAMETER_NAME"]]) ?
-				"index" : strtolower($_REQUEST[MiniVC::$CONF["PARAMETER_NAME"]])
+				empty($_GET[MiniVC::$CONF["PARAMETER_NAME"]]) ?
+				"index" : strtolower($_GET[MiniVC::$CONF["PARAMETER_NAME"]])
 			)
 		}();
 
