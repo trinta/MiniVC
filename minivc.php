@@ -279,7 +279,7 @@ class MiniVCModel {
 	}
 	
 	/** Save data */
-	public function insert($data) {
+	public function insert($data) { 
 		
 		$query = "insert into `%s` (%s) values (%s)";
 		
@@ -299,6 +299,16 @@ class MiniVCModel {
 			)
 		);
 		
+	}
+	
+	/** Load a single item */
+	public function load($conditions = array()) {
+		return $this->controller->load($this->model_name, $conditions);
+	}
+	
+	/** Load all matching rows */
+	public function loadAll($conditions = array()) {
+		return $this->controller->loadAll($this->model_name, $conditions);
 	}
 	
 	/** Update the currently loaded item */
