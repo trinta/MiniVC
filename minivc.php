@@ -319,7 +319,7 @@ class MiniVCModel {
 		$query = "update `%s` set `%s` where `%s`='%s'";
 		$updates = array();
 		foreach($this->field_names as $fld) {
-			$updates[] = "`$fld`=`" . myqsl_escape_string($this->$fld) . "`";
+			$updates[] = "`$fld`='" . myqsl_escape_string($this->$fld) . "'";
 		}
 		/* Do the update */
 		$this->controller->executeSQL(
